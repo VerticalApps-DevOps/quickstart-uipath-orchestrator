@@ -4,7 +4,7 @@ Description: >-
   Orchestrator deployed in private Subnets, with an ALB behind a Route53 in
   public subnets. (qs-1r2g41245)
 Metadata:
-  QuickStartDocumentation:
+  Documentation:
     EntrypointName: "Launch into a new VPC"
     Order: "1"
   'AWS::CloudFormation::Interface':
@@ -62,7 +62,7 @@ Metadata:
           - OrchestratorLicense
           - OrchestratorPassword
       - Label:
-          default: Quickstart Bucket configuration
+          default: Bucket configuration
         Parameters:
           - QSS3BucketName
           - QSS3KeyPrefix
