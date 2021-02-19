@@ -1,10 +1,10 @@
-AWSTemplateFormatVersion: 2010-09-09
+  AWSTemplateFormatVersion: 2010-09-09
 Description: >-
   This template creates a Multi-AZ, multi-subnet VPC infrastructure with UIPath
   Orchestrator deployed in private Subnets, with an ALB behind a Route53 in
   public subnets. (qs-1r2g41245)
 Metadata:
-  Documentation:
+  QuickStartDocumentation:
     EntrypointName: "Launch into a new VPC"
     Order: "1"
   'AWS::CloudFormation::Interface':
@@ -62,7 +62,7 @@ Metadata:
           - OrchestratorLicense
           - OrchestratorPassword
       - Label:
-          default: Bucket configuration
+          default: Quickstart Bucket configuration
         Parameters:
           - QSS3BucketName
           - QSS3KeyPrefix
@@ -904,34 +904,34 @@ Parameters:
     ConstraintDescription: >-
       Orchestrator Password must contain at least one uppercase letter and be
       longer than six characters.
-  S3BucketName:
+  QSS3BucketName:
     AllowedPattern: '^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$'
     ConstraintDescription: >-
-      Bucket name can include numbers, lowercase letters, uppercase
+      Quick Start bucket name can include numbers, lowercase letters, uppercase
       letters, and hyphens (-). It cannot start or end with a hyphen (-).
-    Description: S3 bucket name hosting the templates.
+    Description: S3 bucket name hosting the Quickstart templates.
     Type: String
-    Default: aws-start
-  S3BucketRegion:
+    Default: aws-quickstart
+  QSS3BucketRegion:
     Default: us-east-1
     Description: >-
-      The AWS Region where the Quick Start S3 bucket (S3BucketName) is hosted.
+      The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted.
       When using your own bucket, you must specify this value.
     Type: String
     AllowedPattern: (us(-gov)?|ap|ca|cn|eu|sa)-(central|(north|south)?(east|west)?)-\d
     ConstraintDescription: Quick Start bucket region must be a valid AWS Region code.
-  S3KeyPrefix:
+  QSS3KeyPrefix:
     AllowedPattern: '^[0-9a-zA-Z-/]*/$'
     ConstraintDescription: >-
-      Key prefix can include numbers, lowercase letters, uppercase
+      Quick Start key prefix can include numbers, lowercase letters, uppercase
       letters, and hyphens (-), and ending with a slash(/).
     Default: quickstart-uipath-orchestrator/
     Description: S3 key prefix under which Quick Start templates are hosted.
     Type: String
 Conditions:
   UsingDefaultBucket: !Equals
-    - !Ref S3BucketName
-    - aws-start
+    - !Ref QSS3BucketName
+    - aws-quickstart
   3AZCondition: !Equals
     - !Ref NumberOfAZs
     - '3'
@@ -941,15 +941,15 @@ Resources:
     Properties:
       TemplateURL: !Sub
         - >-
-          https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${S3KeyPrefix}submodules/aws-vpc/templates/aws-vpc.template
+          https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}submodules/quickstart-aws-vpc/templates/aws-vpc.template
         - S3Bucket: !If
             - UsingDefaultBucket
-            - !Sub '${S3BucketName}-${AWS::Region}'
-            - !Ref S3BucketName
+            - !Sub '${QSS3BucketName}-${AWS::Region}'
+            - !Ref QSS3BucketName
           S3Region: !If
             - UsingDefaultBucket
             - !Ref 'AWS::Region'
-            - !Ref S3BucketRegion
+            - !Ref QSS3BucketRegion
       Parameters:
         AvailabilityZones: !Join
           - ','
@@ -1008,7 +1008,6 @@ Resources:
       Code:
         ZipFile: !Join
           - |+
-
           - - import boto3
             - import json
             - import cfnresponse
@@ -1076,11 +1075,11 @@ Resources:
     Properties:
       TemplateURL: !Sub
         - >-
-          https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${S3KeyPrefix}templates/storage.template.yaml
+          https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/storage.template.yaml
         - S3Bucket: !If
             - UsingDefaultBucket
-            - !Sub '${S3BucketName}-${AWS::Region}'
-            - !Ref S3BucketName
+            - !Sub '${QSS3BucketName}-${AWS::Region}'
+            - !Ref QSS3BucketName
           S3Region: !If
             - UsingDefaultBucket
             - !Ref 'AWS::Region'
@@ -1097,15 +1096,15 @@ Resources:
     Properties:
       TemplateURL: !Sub
         - >-
-          https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${S3KeyPrefix}templates/routing.template.yaml
+          https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/routing.template.yaml
         - S3Bucket: !If
             - UsingDefaultBucket
-            - !Sub '${S3BucketName}-${AWS::Region}'
-            - !Ref S3BucketName
+            - !Sub '${QSS3BucketName}-${AWS::Region}'
+            - !Ref QSS3BucketName
           S3Region: !If
             - UsingDefaultBucket
             - !Ref 'AWS::Region'
-            - !Ref S3BucketRegion
+            - !Ref QSS3BucketRegion
       Parameters:
         VPCID: !GetAtt
           - NetworkStack
@@ -1124,15 +1123,15 @@ Resources:
     Properties:
       TemplateURL: !Sub
         - >-
-          https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${S3KeyPrefix}templates/ha.template.yaml
+          https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ha.template.yaml
         - S3Bucket: !If
             - UsingDefaultBucket
-            - !Sub '${S3BucketName}-${AWS::Region}'
-            - !Ref S3BucketName
+            - !Sub '${QSS3BucketName}-${AWS::Region}'
+            - !Ref QSS3BucketName
           S3Region: !If
             - UsingDefaultBucket
             - !Ref 'AWS::Region'
-            - !Ref S3BucketRegion
+            - !Ref QSS3BucketRegion
       Parameters:
         VPCID: !GetAtt NetworkStack.Outputs.VPCID
         VPCCIDR: !Ref VPCCIDR
@@ -1153,15 +1152,15 @@ Resources:
     Properties:
       TemplateURL: !Sub
         - >-
-          https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${S3KeyPrefix}templates/database.template.yaml
+          https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/database.template.yaml
         - S3Bucket: !If
             - UsingDefaultBucket
-            - !Sub '${S3BucketName}-${AWS::Region}'
-            - !Ref S3BucketName
+            - !Sub '${QSS3BucketName}-${AWS::Region}'
+            - !Ref QSS3BucketName
           S3Region: !If
             - UsingDefaultBucket
             - !Ref 'AWS::Region'
-            - !Ref S3BucketRegion
+            - !Ref QSS3BucketRegion
       Parameters:
         VPCID: !GetAtt NetworkStack.Outputs.VPCID
         VPCCIDR: !Ref VPCCIDR
@@ -1180,15 +1179,15 @@ Resources:
     Properties:
       TemplateURL: !Sub
         - >-
-          https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${S3KeyPrefix}templates/server.template.yaml
+          https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/server.template.yaml
         - S3Bucket: !If
             - UsingDefaultBucket
-            - !Sub '${S3BucketName}-${AWS::Region}'
-            - !Ref S3BucketName
+            - !Sub '${QSS3BucketName}-${AWS::Region}'
+            - !Ref QSS3BucketName
           S3Region: !If
             - UsingDefaultBucket
             - !Ref 'AWS::Region'
-            - !Ref S3BucketRegion
+            - !Ref QSS3BucketRegion
       Parameters:
         VPCID: !GetAtt NetworkStack.Outputs.VPCID
         VPCCIDR: !Ref VPCCIDR
@@ -1248,13 +1247,13 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Sub
-        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${S3KeyPrefix}submodules/aws-acm-certificate/templates/aws-acm-certificate.template.yml"
-        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref S3BucketRegion]
-          S3Bucket: !If [UsingDefaultBucket, !Sub '${S3BucketName}-${AWS::Region}', !Ref S3BucketName]
+        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}submodules/quickstart-aws-acm-certificate/templates/quickstart-aws-acm-certificate.template.yml"
+        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
       Parameters:
-        S3BucketName: !Ref S3BucketName
-        S3BucketRegion: !Ref S3BucketRegion
-        S3KeyPrefix: !Sub "${S3KeyPrefix}submodules/aws-acm-certificate/"
+        QSS3BucketName: !Ref QSS3BucketName
+        QSS3BucketRegion: !Ref QSS3BucketRegion
+        QSS3KeyPrefix: !Sub "${QSS3KeyPrefix}submodules/quickstart-aws-acm-certificate/"
         DomainName: !Ref UiPathFQDN
         HostedZoneID: !Ref HostedZoneID
 
