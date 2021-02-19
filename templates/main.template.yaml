@@ -1008,6 +1008,7 @@ Resources:
       Code:
         ZipFile: !Join
           - |+
+
           - - import boto3
             - import json
             - import cfnresponse
