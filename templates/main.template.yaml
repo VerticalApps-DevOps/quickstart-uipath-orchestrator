@@ -879,9 +879,9 @@ Parameters:
   OrchestratorVersion:
     Description: UIPath Orchestrator Version to be installed.
     Type: String
-    Default: 20.10.2
+    Default: 20.10.5
     AllowedValues:
-      - 20.10.2
+      - 20.10.5
     ConstraintDescription: 'Orchestrator version number can contain only digits and dot(.), and must .'
   OrchestratorInstanceCount:
     Description: Desired Capacity (instance count) for Orchestrator instances.
