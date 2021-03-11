@@ -18,12 +18,6 @@ Metadata:
           default: Network Configuration
         Parameters:
           - VPCCIDR
-          - PublicSubnetTag1
-          - PublicSubnetTag2
-          - PublicSubnetTag3
-          - PrivateSubnetTag1
-          - PrivateSubnetTag2
-          - PrivateSubnetTag3
       - Label:
           default: Orchestrator Instance Configuration
         Parameters:
@@ -34,18 +28,6 @@ Metadata:
         Parameters:
           - GatewayName
           - GatewayTimezone
-      - Label:
-          default: DNS or SSL Configuration
-        Parameters:
-          - UiPathFQDN
-          - HostedZoneID
-      - Label:
-          default: High Availability Configuration
-        Parameters:
-          - HAAUser
-          - HAAPassword
-          - HAPort
-          - HAALicense
       - Label:
           default: RDS Database Configuration
         Parameters:
@@ -73,36 +55,12 @@ Metadata:
         default: Number of AZs to use
       VPCCIDR:
         default: VPC CIDR
-      PrivateSubnetTag1:
-        default: Private subnet 1 tag
-      PrivateSubnetTag2:
-        default: Private subnet 2 tag
-      PrivateSubnetTag3:
-        default: Private subnet 3 tag
-      PublicSubnetTag1:
-        default: Public subnet 1 tag
-      PublicSubnetTag2:
-        default: Public subnet 2 tag
-      PublicSubnetTag3:
-        default: Public subnet 3 tag
       KeyPairName:
         default: Instance Key pair
       InstanceType:
         default: Instance type
       GatewayName:
         default: Storage Gateway
-      UiPathFQDN:
-        default: Hosting FQDN
-      HostedZoneID:
-        default: Route 53 Hosted Zone Id
-      HAAUser:
-        default: HA Addon Username
-      HAAPassword:
-        default: HA Addon Password
-      HAPort:
-        default: HA Addon Port
-      HAALicense:
-        default: HA Addon License Key
       RDSDBName:
         default: RDS Database Name
       RDSAllocatedStorage:
@@ -146,54 +104,6 @@ Parameters:
     ConstraintDescription: CIDR block parameter must be in the form x.x.0.0/16
     Default: 10.0.0.0/16
     Description: 'CIDR block for the VPC, must be in the form x.x.0.0/16.'
-    Type: String
-  PrivateSubnetTag1:
-    AllowedPattern: '^([a-zA-Z0-9+\-._:/@]+=[a-zA-Z0-9+\-.,_:/@ *\\"''\[\]\{\}]*)?$'
-    ConstraintDescription: >-
-      tags must be in format "Key=Value" keys can only contain
-      [a-zA-Z0-9+\-._:/@], values can contain [a-zA-Z0-9+\-._:/@ *\\"'\[\]\{\}]
-    Default: Network=Private1
-    Description: Tag to add to private subnet 1 in format Key=Value (Optional).
-    Type: String
-  PrivateSubnetTag2:
-    AllowedPattern: '^([a-zA-Z0-9+\-._:/@]+=[a-zA-Z0-9+\-.,_:/@ *\\"''\[\]\{\}]*)?$'
-    ConstraintDescription: >-
-      tags must be in format "Key=Value" keys can only contain
-      [a-zA-Z0-9+\-._:/@], values can contain [a-zA-Z0-9+\-._:/@ *\\"'\[\]\{\}]
-    Default: Network=Private2
-    Description: Tag to add to private subnet 2 in format Key=Value (Optional).
-    Type: String
-  PrivateSubnetTag3:
-    AllowedPattern: '^([a-zA-Z0-9+\-._:/@]+=[a-zA-Z0-9+\-.,_:/@ *\\"''\[\]\{\}]*)?$'
-    ConstraintDescription: >-
-      tags must be in format "Key=Value" keys can only contain
-      [a-zA-Z0-9+\-._:/@], values can contain [a-zA-Z0-9+\-._:/@ *\\"'\[\]\{\}]
-    Default: Network=Private3
-    Description: Tag to add to private subnet 3 in format Key=Value (Optional).
-    Type: String
-  PublicSubnetTag1:
-    AllowedPattern: '^([a-zA-Z0-9+\-._:/@]+=[a-zA-Z0-9+\-.,_:/@ *\\"''\[\]\{\}]*)?$'
-    ConstraintDescription: >-
-      tags must be in format "Key=Value" keys can only contain
-      [a-zA-Z0-9+\-._:/@], values can contain [a-zA-Z0-9+\-._:/@ *\\"'\[\]\{\}]
-    Default: Network=Public1
-    Description: Tag to add to public subnet 1 in format Key=Value (Optional)
-    Type: String
-  PublicSubnetTag2:
-    AllowedPattern: '^([a-zA-Z0-9+\-._:/@]+=[a-zA-Z0-9+\-.,_:/@ *\\"''\[\]\{\}]*)?$'
-    ConstraintDescription: >-
-      tags must be in format "Key=Value" keys can only contain
-      [a-zA-Z0-9+\-._:/@], values can contain [a-zA-Z0-9+\-._:/@ *\\"'\[\]\{\}]
-    Default: Network=Public2
-    Description: Tag to add to public subnet 2 in format Key=Value (Optional).
-    Type: String
-  PublicSubnetTag3:
-    AllowedPattern: '^([a-zA-Z0-9+\-._:/@]+=[a-zA-Z0-9+\-.,_:/@ *\\"''\[\]\{\}]*)?$'
-    ConstraintDescription: >-
-      tags must be in format "Key=Value" keys can only contain
-      [a-zA-Z0-9+\-._:/@], values can contain [a-zA-Z0-9+\-._:/@ *\\"'\[\]\{\}]
-    Default: Network=Public3
-    Description: Tag to add to public subnet 3 in format Key=Value (Optional).
     Type: String
   KeyPairName:
     Description: 'Existing Key Pair, which is to be used to Log in to VM instances.'
@@ -808,40 +718,6 @@ Parameters:
       - W-SU
       - Zulu
     Default: US/Eastern
-  UiPathFQDN:
-    Description: The fully qualified domain name where the UiPath Orchestrator should be installed
-    Type: String
-  HostedZoneID:
-    Description: The Route 53 hosted zone Id
-    Type: AWS::Route53::HostedZone::Id
-  HAAUser:
-    Description: High Availability Add-on username. A valid email must be used as username
-    Type: String
-    AllowedPattern: '^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$'
-    ConstraintDescription: A valid email must be used as HA username
-  HAAPassword:
-    Description: High Availability Add-on password.
-    Type: String
-    NoEcho: 'true'
-    MinLength: '6'
-    MaxLength: '124'
-    AllowedPattern: >-
-      (?=^.{6,124}$)((?=.*\d)(?=.*[A-Z])(?=.*[a-z])|(?=.*\d)(?=.*[^A-Za-z0-9])(?=.*[a-z])|(?=.*[^A-Za-z0-9])(?=.*[A-Z])(?=.*[a-z])|(?=.*\d)(?=.*[A-Z])(?=.*[^A-Za-z0-9]))^.*
-    ConstraintDescription: >-
-      HA Password must contain at least one uppercase letter and be longer than
-      six charaters.
-  HAPort:
-    Description: Port on which High Availability Add-on listens to
-    Type: String
-    Default: 10000
-    AllowedValues:
-      - 10000
-  HAALicense:
-    Description: >-
-      License key, purchased from UIPath, to be used with the High
-      Availability Add-on.
-    Default: ''
-    Type: String
   RDSDBName:
     Description: Name for UIPath Database to be created.
     Type: String
@@ -1142,9 +1018,6 @@ Resources:
             - !GetAtt NetworkStack.Outputs.PrivateSubnet2BID
             - !If [3AZCondition, !GetAtt NetworkStack.Outputs.PrivateSubnet3AID, !Ref "AWS::NoValue"]
         KeyPairName: !Ref KeyPairName
-        HAAUser: !Ref HAAUser
-        HAAPassword: !Ref HAAPassword
-        HAALicense: !Ref HAALicense
         FindAMIFunctionArn: !GetAtt
           - FindAMIFunction
           - Arn
