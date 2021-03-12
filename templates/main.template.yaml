@@ -835,12 +835,6 @@ Resources:
         CreatePrivateSubnets: 'true'
         CreateAdditionalPrivateSubnets: 'true'
         KeyPairName: !Ref KeyPairName
-        PublicSubnetTag1: !Ref PublicSubnetTag1
-        PublicSubnetTag2: !Ref PublicSubnetTag2
-        PublicSubnetTag3: !Ref PublicSubnetTag3
-        PrivateSubnetATag1: !Ref PrivateSubnetTag1
-        PrivateSubnetBTag1: !Ref PrivateSubnetTag2
-        PrivateSubnetBTag2: !Ref PrivateSubnetTag3
   FindAmiLambdaRole:
     Type: 'AWS::IAM::Role'
     Properties:
@@ -968,59 +962,6 @@ Resources:
         GatewayTimezone: !Ref GatewayTimezone
         VPCID: !GetAtt NetworkStack.Outputs.VPCID
         VPCCIDR: !Ref VPCCIDR
-  RoutingStack:
-    Type: 'AWS::CloudFormation::Stack'
-    Properties:
-      TemplateURL: !Sub
-        - >-
-          https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/routing.template.yaml
-        - S3Bucket: !If
-            - UsingDefaultBucket
-            - !Sub '${QSS3BucketName}-${AWS::Region}'
-            - !Ref QSS3BucketName
-          S3Region: !If
-            - UsingDefaultBucket
-            - !Ref 'AWS::Region'
-            - !Ref QSS3BucketRegion
-      Parameters:
-        VPCID: !GetAtt
-          - NetworkStack
-          - Outputs.VPCID
-        VPCCIDR: !Ref VPCCIDR
-        SubnetIDs: !Join
-          - ','
-          - - !GetAtt NetworkStack.Outputs.PublicSubnet1ID
-            - !GetAtt NetworkStack.Outputs.PublicSubnet2ID
-            - !If [3AZCondition, !GetAtt NetworkStack.Outputs.PublicSubnet3ID, !Ref "AWS::NoValue"]
-        Fqdn: !Ref UiPathFQDN
-        HostedZoneID: !Ref HostedZoneID
-        SSLCertificateArn: !GetAtt ConfigureSSLStack.Outputs.ACMCertificate
-  HAStack:
-    Type: 'AWS::CloudFormation::Stack'
-    Properties:
-      TemplateURL: !Sub
-        - >-
-          https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ha.template.yaml
-        - S3Bucket: !If
-            - UsingDefaultBucket
-            - !Sub '${QSS3BucketName}-${AWS::Region}'
-            - !Ref QSS3BucketName
-          S3Region: !If
-            - UsingDefaultBucket
-            - !Ref 'AWS::Region'
-            - !Ref QSS3BucketRegion
-      Parameters:
-        VPCID: !GetAtt NetworkStack.Outputs.VPCID
-        VPCCIDR: !Ref VPCCIDR
-        SubnetIDs: !Join
-          - ','
-          - - !GetAtt NetworkStack.Outputs.PrivateSubnet1AID
-            - !GetAtt NetworkStack.Outputs.PrivateSubnet2BID
-            - !If [3AZCondition, !GetAtt NetworkStack.Outputs.PrivateSubnet3AID, !Ref "AWS::NoValue"]
-        KeyPairName: !Ref KeyPairName
-        FindAMIFunctionArn: !GetAtt
-          - FindAMIFunction
-          - Arn
   DatabaseStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
@@ -1102,57 +1043,15 @@ Resources:
         GatewayPrivateIP: !GetAtt
           - StorageStack
           - Outputs.GatewayVMPrivateIP1
-        HAMasterPrivateIP: !GetAtt
-          - HAStack
-          - Outputs.HAMasterPrivateIP
-        HASlave1PrivateIP: !GetAtt
-          - HAStack
-          - Outputs.HASlave1PrivateIP
-        HASlave2PrivateIP: !GetAtt
-          - HAStack
-          - Outputs.HASlave2PrivateIP
-        HAPort: !Ref HAPort
-        HAAPassword: !Ref HAAPassword
         QSS3BucketName: !Ref QSS3BucketName
         QSS3BucketRegion: !Ref QSS3BucketRegion
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
-        Fqdn: !Ref UiPathFQDN
-  ConfigureSSLStack:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: !Sub
-        - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}submodules/quickstart-aws-acm-certificate/templates/quickstart-aws-acm-certificate.template.yml"
-        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
-          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
-      Parameters:
-        QSS3BucketName: !Ref QSS3BucketName
-        QSS3BucketRegion: !Ref QSS3BucketRegion
-        QSS3KeyPrefix: !Sub "${QSS3KeyPrefix}submodules/quickstart-aws-acm-certificate/"
-        DomainName: !Ref UiPathFQDN
-        HostedZoneID: !Ref HostedZoneID
-
 Outputs:
-  FQDNLoadBalancer:
-    Description: UiPath Orchestrator Login page
-    Value: !Ref UiPathFQDN
   BastionHost:
     Description: Bastion Host's Public IP address 
     Value: !GetAtt
       - ServerStack
       - Outputs.BastionHostPublicIP
-  HaaNodesIPs:
-    Description: High Availability Add-on's list of IP addresses 
-    Value: !Join
-      - ','
-      - - !GetAtt 
-          - HAStack
-          - Outputs.HAMasterPrivateIP
-        - !GetAtt
-          - HAStack
-          - Outputs.HASlave1PrivateIP
-        - !GetAtt
-          - HAStack
-          - Outputs.HASlave2PrivateIP
   NugetStorageS3Bucket:
     Description: S3 bucket name that contains Orchestrator's Nuget packages
     Value: !GetAtt
