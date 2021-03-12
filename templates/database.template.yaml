@@ -33,13 +33,13 @@ Resources:
       GroupName: !Join
         - '-'
         - - !Ref 'AWS::StackName'
-          - UiPathHaaSecurityGroup
+          - UiPathSecurityGroup
       Tags:
         - Key: Name
           Value: !Join
             - '-'
             - - !Ref 'AWS::StackName'
-              - UiPathHaaSecurityGroup
+              - UiPathSecurityGroup
       VpcId: !Ref VPCID
       SecurityGroupIngress:
         - IpProtocol: tcp
